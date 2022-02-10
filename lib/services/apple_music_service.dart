@@ -2,13 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:musik/model/main.dart';
-
-import 'model/album.dart';
-import 'model/artist.dart';
-import 'model/chart.dart';
-import 'model/genre.dart';
-import 'model/search.dart';
-import 'model/song.dart';
+import '../model/album.dart';
+import '../model/artist.dart';
+import '../model/chart.dart';
+import '../model/genre.dart';
+import '../model/search.dart';
+import '../model/song.dart';
 
 class AppleMusicStore {
   AppleMusicStore._privateConstructor();
