@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:musik/scenes/browse_scene.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,22 +8,11 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const CupertinoApp(
       title: 'Flutter Demo',
       theme: CupertinoThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primaryColor: Colors.blue,
       ),
       home: MainScene(),
@@ -39,11 +29,29 @@ class MainScene extends StatefulWidget {
 class _MainSceneState extends State<MainScene> {
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Main'),
+    return CupertinoTabScaffold(
+      tabBar:  CupertinoTabBar(
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home), title: Text('Home')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search), title: Text('Search'))
+        ],
       ),
-        child: Container()
+        tabBuilder: (BuildContext context, int index) {
+          switch (index) {
+            case 0:
+              return CupertinoTabView(
+                builder: (context) => const BrowseWidget(),
+              );
+            case 1:
+              return CupertinoTabView(
+                builder: (context) => const BrowseWidget(),
+              );
+            default:
+              return Container();
+          }
+        },
     );
   }
 }
