@@ -25,7 +25,7 @@ class AppleMusicStore {
 
   Future<dynamic> _fetchJSON(String url) async {
     final response =
-    await http.get(Uri(path: url), headers: {'Authorization': "Bearer $JWT_KEY"});
+    await http.get(Uri.parse(url), headers: {'Authorization': "Bearer $JWT_KEY"});
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
