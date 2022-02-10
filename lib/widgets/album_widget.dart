@@ -39,10 +39,10 @@ class AlbumWidgetState extends State<AlbumWidget> {
               if (snapshot.hasData) {
                 final album = snapshot.data;
                 if (album == null) return Container();
-                final List<Widget> list = [AlbumHeaderWidget(album: album!)];
+                final List<Widget> list = [AlbumHeaderWidget(album: album)];
                 int songIndex = 1;
 
-                for (var s in album!.songs) {
+                for (var s in album.songs) {
                   list.add(AlbumSongItemWidget(
                     index: songIndex,
                     song: s,
