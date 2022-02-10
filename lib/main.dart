@@ -33,9 +33,9 @@ class _MainSceneState extends State<MainScene> {
       tabBar:  CupertinoTabBar(
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home), title: Text('Home')),
+              icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search), title: Text('Search'))
+              icon: Icon(Icons.search), label: 'Search')
         ],
       ),
         tabBuilder: (BuildContext context, int index) {
