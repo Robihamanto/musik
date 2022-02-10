@@ -19,7 +19,7 @@ dependencies:
   http: ^0.13.4
 
   # utils
-  flutter_sound: ^9.0.0-5
+  flutter_sound: ^9.1.2
   intl: ^0.17.0
 
 dev_dependencies:

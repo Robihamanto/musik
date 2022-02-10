@@ -41,13 +41,13 @@ class AlbumWidgetState extends State<AlbumWidget> {
                 final List<Widget> list = [AlbumHeaderWidget(album: album!)];
                 int songIndex = 1;
 
-                album!.songs.forEach((s) {
+                for (var s in album!.songs) {
                   list.add(AlbumSongItemWidget(
                     index: songIndex,
                     song: s,
                   ));
                   songIndex++;
-                });
+                }
 
                 return ListView(
                   children: list,
