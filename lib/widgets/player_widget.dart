@@ -5,7 +5,6 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
 import 'dart:async';
-
 import 'package:musik/model/song.dart';
 import 'package:musik/services/apple_music_service.dart';
 
@@ -23,90 +22,72 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   final musicStore = AppleMusicStore.instance;
   bool _isPlaying = false;
   StreamSubscription? _playerSubscription;
-  FlutterSound flutterSound = FlutterSound();
+  final _player = FlutterSoundPlayer();
 
   String _startText = '00:00';
   String _endText = '00:00';
-  Duration slider_current_position = Duration(seconds: 0);
-  Duration max_duration = Duration(seconds: 1);
+  var sliderCurrentPosition = const Duration(seconds: 0);
+  var maxDuration = const Duration(seconds: 1);
 
   @override
   void initState() {
     super.initState();
 
-    flutterSound = FlutterSound();
-    flutterSound.thePlayer.setSubscriptionDuration(Duration(milliseconds: 1));
-    // flutterSound.thePlayer.setDbPeakLevelUpdate(0.8);
-    // flutterSound.thePlayer.setDbLevelEnabled(true);
+    _player.openPlayer();
 
     initializeDateFormatting();
   }
 
-  void startPlayer(String uri) async {
-    await flutterSound.thePlayer.startPlayer(fromURI: uri);
-    await flutterSound.thePlayer.setVolume(1.0);
-    print('startPlayer: $uri');
+  void _startPlayer(String uri) async {
+    print('🎵 start player: $uri');
+
+    await _player.startPlayer(fromURI: uri);
+    await _player.setVolume(1.0);
 
     try {
-      _playerSubscription = flutterSound.thePlayer.onProgress!.listen((e) async {
-        if (e != null) {
-          slider_current_position = e.position;
-          max_duration = e.duration;
+      _playerSubscription = _player.onProgress!.listen((e) async {
+        sliderCurrentPosition = e.position;
+        maxDuration = e.duration;
 
-          final remaining = e.duration - e.position;
+        final remaining = e.duration - e.position;
 
-          DateTime date = DateTime.fromMillisecondsSinceEpoch(
-              e.position.inMilliseconds,
-              isUtc: true);
+        DateTime date = DateTime.fromMillisecondsSinceEpoch(
+            e.position.inMilliseconds,
+            isUtc: true);
 
-          DateTime endDate = DateTime.fromMillisecondsSinceEpoch(
-              remaining.inMilliseconds,
-              isUtc: true);
+        DateTime endDate = DateTime.fromMillisecondsSinceEpoch(
+            remaining.inMilliseconds,
+            isUtc: true);
 
-          String startText = DateFormat('mm:ss', 'en_GB').format(date);
-          String endText = DateFormat('mm:ss', 'en_GB').format(endDate);
+        String startText = DateFormat('mm:ss', 'en_GB').format(date);
+        String endText = DateFormat('mm:ss', 'en_GB').format(endDate);
 
-          if (this.mounted) {
-            this.setState(() {
-              this._startText = startText;
-              this._endText = endText;
-              this.slider_current_position = slider_current_position;
-              this.max_duration = max_duration;
-            });
-          }
-        } else {
-          slider_current_position = Duration(seconds: 0);
-
-          if (_playerSubscription != null) {
-            _playerSubscription!.cancel();
-            _playerSubscription = null;
-          }
-          this.setState(() {
-            this._isPlaying = false;
-            this._startText = '00:00';
-            this._endText = '00:00';
+        if (mounted) {
+          setState(() {
+            _startText = startText;
+            _endText = endText;
+            sliderCurrentPosition = sliderCurrentPosition;
+            maxDuration = maxDuration;
           });
         }
       });
     } catch (err) {
       print('error: $err');
-      this.setState(() {
-        this._isPlaying = false;
-      });
+      setState(() => _isPlaying = false);
     }
   }
 
   _pausePlayer() async {
-    flutterSound.thePlayer.pausePlayer().then((value) {
+    _player.pausePlayer().then((value) {
       print('pausePlayer');
-      this.setState(() => this._isPlaying = false);
+      setState(() => _isPlaying = false);
     });
   }
 
   _resumePlayer() async {
-    flutterSound.thePlayer.resumePlayer().then((_) {
+    _player.resumePlayer().then((_) {
       print('resumePlayer');
-      setState(() => this._isPlaying = true);
+      setState(() => _isPlaying = true);
     });
   }
 
@@ -117,13 +98,13 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       return;
     }
 
-    flutterSound.thePlayer.seekToPlayer(Duration(seconds: secs.toInt()));
+    _player.seekToPlayer(Duration(seconds: secs.toInt()));
   }
 
   @override
   void dispose() async {
     super.dispose();
-    await flutterSound.thePlayer.stopPlayer();
+    await _player.stopPlayer();
     if (_playerSubscription != null) {
       _playerSubscription!.cancel();
       _playerSubscription = null;
@@ -136,14 +117,14 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         child: ListView(
           children: <Widget>[
             Padding(
-                padding: EdgeInsets.only(top: 16.0),
+                padding: const EdgeInsets.only(top: 16.0),
                 child: Material(
                   color: Colors.white,
                   child: InkWell(
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(
+                      child: const Icon(
                         Icons.close,
                         color: Colors.grey,
                       )),
@@ -154,7 +135,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               children: <Widget>[
                 Container(
                     height: MediaQuery.of(context).size.height / 2.5,
-                    decoration: BoxDecoration(boxShadow: [
+                    decoration: const BoxDecoration(boxShadow: [
                       BoxShadow(
                         color: Colors.grey,
                         blurRadius: 10.0, // has the effect of softening the shadow
@@ -165,7 +146,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                         ),
                       )
                     ]),
-                    margin: EdgeInsets.only(top: 16, right: 16.0, left: 16.0),
+                    margin: const EdgeInsets.only(top: 16, right: 16.0, left: 16.0),
                     child: ClipRRect(
                       clipBehavior: Clip.antiAlias,
                       borderRadius: BorderRadius.circular(10),
@@ -178,30 +159,30 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                       ),
                     )),
                 Container(
-                    margin: EdgeInsets.only(top: 32, left: 16, right: 16),
+                    margin: const EdgeInsets.only(top: 32, left: 16, right: 16),
                     width: MediaQuery.of(context).size.width,
                     child: CupertinoSlider(
-                        value: slider_current_position.inSeconds.toDouble(),
+                        value: sliderCurrentPosition.inSeconds.toDouble(),
                         min: 0.0,
-                        max: max_duration.inSeconds.toDouble(),
+                        max: maxDuration.inSeconds.toDouble(),
                         onChangeEnd: (x) {},
                         onChangeStart: (x) {},
                         onChanged: (double value) async {
                           await _seekToPlayer(value.toInt());
                         },
-                        divisions: max_duration.inSeconds)),
+                        divisions: maxDuration.inSeconds)),
                 Container(
-                  margin: EdgeInsets.only(left: 24, right: 24, bottom: 32),
+                  margin: const EdgeInsets.only(left: 24, right: 24, bottom: 32),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        this._startText,
+                        _startText,
                         textAlign: TextAlign.start,
                         style: Theme.of(context).textTheme.caption,
                       ),
                       Text(
-                        this._endText,
+                        _endText,
                         textAlign: TextAlign.end,
                         style: Theme.of(context).textTheme.caption,
                       )
@@ -209,7 +190,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 32.0, right: 32.0, bottom: 6.0),
+                  margin: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 6.0),
                   child: Text(
                     widget.song.name,
                     style: Theme.of(context).textTheme.subtitle2,
@@ -227,7 +208,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             ),
             Row(
               children: <Widget>[
-                Container(
+                SizedBox(
                   width: 56.0,
                   height: 56.0,
                   child: ClipOval(
@@ -237,22 +218,22 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                           _pausePlayer();
                         } else {
                           if (_playerSubscription == null) {
-                            this.setState(() {
-                              this._isPlaying = true;
+                            setState(() {
+                              _isPlaying = true;
                             });
-                            Timer(Duration(milliseconds: 200), () {
-                              startPlayer(widget.song.previewUrl);
+                            Timer(const Duration(milliseconds: 200), () {
+                              _startPlayer(widget.song.previewUrl);
                             });
                           } else {
                             _resumePlayer();
                           }
                         }
                       },
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Image(
                         image: _isPlaying
-                            ? AssetImage('res/icons/ic_pause.png')
-                            : AssetImage('res/icons/ic_play.png'),
+                            ? const AssetImage('res/icons/ic_pause.png')
+                            : const AssetImage('res/icons/ic_play.png'),
                       ),
                     ),
                   ),
