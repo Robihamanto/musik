@@ -11,11 +11,8 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return const CupertinoApp(
-      title: 'Flutter Demo',
-      theme: CupertinoThemeData(
-        primaryColor: Colors.blue,
-      ),
+    return const MaterialApp(
+      title: 'Musik',
       home: MainScene(),
     );
   }
@@ -28,31 +25,58 @@ class MainScene extends StatefulWidget {
 }
 
 class _MainSceneState extends State<MainScene> {
+
+  int _currentIndex = 0;
+  final List<Widget> _children = [];
+  PageController? _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _initChildren();
+  }
+
+  _initChildren() {
+    _pageController = PageController(initialPage: _currentIndex);
+    _children.add(const BrowseWidget());
+    _children.add(const SearchWidget());;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CupertinoTabScaffold(
-      tabBar:  CupertinoTabBar(
+    return Scaffold(
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: _children,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        selectedItemColor: const Color(0x9C343F55),
+        unselectedItemColor: CupertinoColors.systemGrey4,
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home), label: 'Home'),
+              icon: Icon(Icons.home),
+              label: 'Home'
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search), label: 'Search')
+              icon: Icon(Icons.search),
+              label: 'Search',
+          )
         ],
-      ),
-        tabBuilder: (BuildContext context, int index) {
-          switch (index) {
-            case 0:
-              return CupertinoTabView(
-                builder: (context) => const BrowseWidget(),
-              );
-            case 1:
-              return CupertinoTabView(
-                builder: (context) => const SearchWidget(),
-              );
-            default:
-              return Container();
-          }
-        },
+        onTap: _moveToTab,
+      )
     );
   }
+
+  void _moveToTab(int index) {
+    setState(() => _currentIndex = index);
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (_pageController!.hasClients) _pageController!.jumpToPage(index);
+    });
+  }
+
+
 }
