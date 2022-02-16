@@ -32,14 +32,17 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   @override
   void initState() {
     super.initState();
-
-    _player.openPlayer();
-
+    _initPlayer();
     initializeDateFormatting();
   }
 
+  void _initPlayer() {
+    _player.openPlayer();
+    _player.setSubscriptionDuration(const Duration(milliseconds: 10));
+  }
+
   void _startPlayer(String uri) async {
-    print('🎵 start player: $uri');
+    debugPrint('🎵 start player: $uri');
 
     await _player.startPlayer(fromURI: uri);
     await _player.setVolume(1.0);
@@ -72,21 +75,20 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         }
       });
     } catch (err) {
-      print('error: $err');
       setState(() => _isPlaying = false);
     }
   }
 
   _pausePlayer() async {
     _player.pausePlayer().then((value) {
-      print('pausePlayer');
+      debugPrint('pausePlayer');
       setState(() => _isPlaying = false);
     });
   }
 
   _resumePlayer() async {
     _player.resumePlayer().then((_) {
-      print('resumePlayer');
+      debugPrint('resumePlayer');
       setState(() => _isPlaying = true);
     });
   }
@@ -198,7 +200,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
+                  margin: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
                   child: Text(
                       "${widget.song.artistName} - ${widget.song.albumName}",
                       textAlign: TextAlign.center,
@@ -212,15 +214,13 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   width: 56.0,
                   height: 56.0,
                   child: ClipOval(
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () {
                         if (_isPlaying) {
                           _pausePlayer();
                         } else {
                           if (_playerSubscription == null) {
-                            setState(() {
-                              _isPlaying = true;
-                            });
+                            setState(() => _isPlaying = true);
                             Timer(const Duration(milliseconds: 200), () {
                               _startPlayer(widget.song.previewUrl);
                             });
@@ -229,7 +229,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                           }
                         }
                       },
-                      padding: const EdgeInsets.all(8.0),
                       child: Image(
                         image: _isPlaying
                             ? const AssetImage('res/icons/ic_pause.png')
