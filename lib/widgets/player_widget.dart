@@ -19,6 +19,7 @@ class PlayerWidget extends StatefulWidget {
 }
 
 class _PlayerWidgetState extends State<PlayerWidget> {
+
   final musicStore = AppleMusicStore.instance;
   bool _isPlaying = false;
   StreamSubscription? _playerSubscription;
@@ -36,9 +37,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     initializeDateFormatting();
   }
 
-  void _initPlayer() {
-    _player.openPlayer();
-    _player.setSubscriptionDuration(const Duration(milliseconds: 10));
+  void _initPlayer() async {
+    await _player.openPlayer();
+    await _player.setSubscriptionDuration(const Duration(milliseconds: 100));
   }
 
   void _startPlayer(String uri) async {
@@ -79,28 +80,24 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     }
   }
 
-  _pausePlayer() async {
+  void _pausePlayer() async {
+    debugPrint('pausePlayer');
     _player.pausePlayer().then((value) {
-      debugPrint('pausePlayer');
       setState(() => _isPlaying = false);
     });
   }
 
-  _resumePlayer() async {
+  void _resumePlayer() async {
+    debugPrint('resumePlayer');
     _player.resumePlayer().then((_) {
-      debugPrint('resumePlayer');
       setState(() => _isPlaying = true);
     });
   }
 
-  _seekToPlayer(int milliSecs) async {
+  Future<void> _seekToPlayer(int milliSecs) async {
     final secs = Platform.isIOS ? milliSecs / 1000 : milliSecs;
-
-    if (_playerSubscription == null) {
-      return;
-    }
-
-    _player.seekToPlayer(Duration(seconds: secs.toInt()));
+    if (_playerSubscription == null) return;
+    await _player.seekToPlayer(Duration(seconds: secs.toInt()));
   }
 
   @override
