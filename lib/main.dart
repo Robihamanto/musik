@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:musik/scenes/browse_scene.dart';
+import 'package:musik/utils/theme.dart';
 import 'package:musik/widgets/search_widget.dart';
 
 void main() {
@@ -11,9 +12,12 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      theme: lightThemeData(context),
+      darkTheme: darkThemeData(context),
+      themeMode: ThemeMode.light,
       title: 'Musik',
-      home: MainScene(),
+      home: const MainScene(),
     );
   }
 }

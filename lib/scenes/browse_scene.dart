@@ -33,11 +33,11 @@ class _BrowseWidgetState extends State<BrowseWidget> with AutomaticKeepAliveClie
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return CupertinoPageScaffold(
-        navigationBar: const CupertinoNavigationBar(
-          middle: Text('Browse'),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Browse', style: Theme.of(context).textTheme.headline6),
         ),
-        child: FutureBuilder<Main>(
+        body: FutureBuilder<Main>(
           future: _main,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
