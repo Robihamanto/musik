@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:musik/scenes/browse_scene.dart';
+import 'package:musik/widgets/search_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,7 +47,7 @@ class _MainSceneState extends State<MainScene> {
               );
             case 1:
               return CupertinoTabView(
-                builder: (context) => const BrowseWidget(),
+                builder: (context) => const SearchWidget(),
               );
             default:
               return Container();
