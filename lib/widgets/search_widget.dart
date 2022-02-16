@@ -19,8 +19,11 @@ class SearchWidget extends StatefulWidget {
   }
 }
 
-class SearchWidgetState extends State<SearchWidget>
-    with SingleTickerProviderStateMixin {
+class SearchWidgetState extends State<SearchWidget> with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+
+  @override
+  bool get wantKeepAlive => true;
+
   final _searchTextController = TextEditingController();
   final _searchFocusNode = FocusNode();
   Animation<double>? _animation;
@@ -32,7 +35,6 @@ class SearchWidgetState extends State<SearchWidget>
   @override
   initState() {
     super.initState();
-
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
@@ -51,43 +53,6 @@ class SearchWidgetState extends State<SearchWidget>
     _searchTextController.addListener(_performSearch);
   }
 
-  _performSearch() {
-    final text = _searchTextController.text;
-    if (_search != null && text == _searchTextInProgress) {
-      return;
-    }
-
-    if (text.isEmpty) {
-      setState(() {
-        _search = null;
-        _searchTextInProgress = null;
-      });
-      return;
-    }
-
-    setState(() {
-      _search = musicStore.search(text);
-      _searchTextInProgress = text;
-    });
-  }
-
-  _cancelSearch() {
-    _searchTextController.clear();
-    _searchFocusNode.unfocus();
-    _animationController.reverse();
-    setState(() {
-      _search = null;
-      _searchTextInProgress = null;
-    });
-  }
-
-  _clearSearch() {
-    _searchTextController.clear();
-    setState(() {
-      _search = null;
-      _searchTextInProgress = null;
-    });
-  }
 
   @override
   dispose() {
@@ -97,6 +62,7 @@ class SearchWidgetState extends State<SearchWidget>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           middle: IOSSearchBar(
@@ -215,4 +181,44 @@ class SearchWidgetState extends State<SearchWidget>
       ),
     );
   }
+
+
+  _performSearch() {
+    final text = _searchTextController.text;
+    if (_search != null && text == _searchTextInProgress) {
+      return;
+    }
+
+    if (text.isEmpty) {
+      setState(() {
+        _search = null;
+        _searchTextInProgress = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _search = musicStore.search(text);
+      _searchTextInProgress = text;
+    });
+  }
+
+  _cancelSearch() {
+    _searchTextController.clear();
+    _searchFocusNode.unfocus();
+    _animationController.reverse();
+    setState(() {
+      _search = null;
+      _searchTextInProgress = null;
+    });
+  }
+
+  _clearSearch() {
+    _searchTextController.clear();
+    setState(() {
+      _search = null;
+      _searchTextInProgress = null;
+    });
+  }
+
 }

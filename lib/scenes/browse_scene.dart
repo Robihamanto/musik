@@ -6,7 +6,7 @@ import 'package:musik/widgets/album_widget.dart';
 import 'package:musik/widgets/carousel_album.dart';
 import 'package:musik/widgets/carousel_song_widget.dart';
 
-class BrowseWidget extends StatefulWidget {
+class BrowseWidget extends StatefulWidget{
 
   const BrowseWidget({Key? key}) : super(key: key);
 
@@ -16,7 +16,11 @@ class BrowseWidget extends StatefulWidget {
   }
 }
 
-class _BrowseWidgetState extends State<BrowseWidget> {
+class _BrowseWidgetState extends State<BrowseWidget> with AutomaticKeepAliveClientMixin  {
+
+  @override
+  bool get wantKeepAlive => true;
+
   final musicStore = AppleMusicStore.instance;
   late Future<Main> _main;
 
@@ -28,6 +32,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CupertinoPageScaffold(
         navigationBar: const CupertinoNavigationBar(
           middle: Text('Browse'),
